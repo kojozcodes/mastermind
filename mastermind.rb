@@ -60,8 +60,44 @@ class Game
 end
 
 class Player
-  def initialize
-    
+  attr_reader :role
+
+  def initialize(role)
+    @role = role
+  end
+
+  def create_secret_code
+    if @role == :creator
+      loop do
+        print "Enter the secret code (e.g., red green blue yellow): "
+        code = gets.chomp.downcase.split
+        return code if valid_code?(code)
+
+        puts "Invalid code. Please enter #{CodeGenerator::CODE_LENGTH} valid colors."
+      end
+    else
+      CodeGenerator.generate_secret_code
+    end
+  end
+
+  def make_guess
+    loop do
+      print "Enter your guess (e.g., red green blue yellow): "
+      guess = gets.chomp.downcase.split
+      return guess if valid_guess?(guess)
+
+      puts "Invalid guess. Please enter #{CodeGenerator::CODE_LENGTH} valid colors."
+    end
+  end
+
+  private
+
+  def valid_guess?(guess)
+    guess.length == CodeGenerator::CODE_LENGTH && guess.all? { |color| CodeGenerator::COLORS.include?(color) }
+  end
+
+  def valid_code?(code)
+    code.length == CodeGenerator::CODE_LENGTH && code.all? { |color| CodeGenerator::COLORS.include?(color) }
   end
 end
 
